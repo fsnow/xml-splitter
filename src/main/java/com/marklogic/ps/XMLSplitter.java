@@ -23,6 +23,8 @@ public class XMLSplitter
         options.addOption(new Option("n", "aggregate_record_namespace", true, "namespace of element to split into document"));
         options.addOption(new Option("o", "output_directory_path", true, "target directory for split documents"));
         options.addOption(new Option("d", "aggregate_depth", true, "depth below root to split into documents"));
+        options.addOption(new Option("ne", "namespace_element_list", true, "comma-sep namespace element list"));
+        options.addOption(new Option("h", "help", false, "print help message"));
 
         CommandLine line = null;
         try {
@@ -33,6 +35,12 @@ public class XMLSplitter
             return;
         }
 
+        if (line.hasOption("h")) {
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("xml-splitter", options);
+            return;
+        }
+
         XMLSplitter splitter = new XMLSplitter();
 
         splitter.setInputFilePath(line.getOptionValue("i"));
@@ -40,6 +48,7 @@ public class XMLSplitter
         splitter.setAggregateRecordElement(line.getOptionValue("e"));
         splitter.setOutputDirectoryPath(line.getOptionValue("o"));
         splitter.setAggregateDepth(line.getOptionValue("d"));
+        splitter.setAggregateRecordNamesList(line.getOptionValue("ne"));
 
         splitter.split();
     }
@@ -47,12 +56,12 @@ public class XMLSplitter
     private String inputFilePath;
     private String aggregateRecordElement;
     private String aggregateRecordNamespace;
+    private String aggregateRecordNamesList;
     private String outputDirectoryPath;
     private int aggregateDepth = -1;
 
-    private boolean hasAggregateRecordQName = false;
     private boolean hasAggregateDepth = false;
-    private QName aggregateRecordQName = null;
+    private ArrayList<QName> aggregateRecordQNameList = null;
 
     public void setInputFilePath(String path) {
         if (path == null) {
@@ -68,6 +77,10 @@ public class XMLSplitter
 
     public void setAggregateRecordNamespace(String ns) {
         this.aggregateRecordNamespace = ns;
+    }
+
+    public void setAggregateRecordNamesList(String str) {
+        this.aggregateRecordNamesList = str;
     }
 
     public void setOutputDirectoryPath(String path) {
@@ -87,28 +100,41 @@ public class XMLSplitter
             this.hasAggregateDepth = true;
         }
     }
-    private void constructQName() {
+
+    private void constructQNames()
+    {
+        this.aggregateRecordQNameList = new ArrayList<QName>();
+
         if (this.aggregateRecordElement != null && this.aggregateRecordElement.length() > 0) {
             String ns = this.aggregateRecordNamespace;
             if (ns != null && ns.length() > 0) {
-                this.aggregateRecordQName = new QName(this.aggregateRecordElement, this.aggregateRecordNamespace);
+                this.aggregateRecordQNameList.add(new QName(this.aggregateRecordElement, this.aggregateRecordNamespace));
             }
             else {
-                this.aggregateRecordQName = new QName(this.aggregateRecordElement);
+                this.aggregateRecordQNameList.add(new QName(this.aggregateRecordElement));
             }
-            this.hasAggregateRecordQName = true;
         }
-        else {
-            this.hasAggregateRecordQName = false;
-            this.aggregateRecordQName = null;
+
+        if (this.aggregateRecordNamesList != null && this.aggregateRecordNamesList.length() > 0) {
+            String[] parts = this.aggregateRecordNamesList.split(",");
+            for (int i = 0; i < parts.length; i += 2) {
+                String ns = parts[i].trim();
+                String localName = parts[i + 1].trim();
+                if (ns.length() > 0) {
+                    this.aggregateRecordQNameList.add(new QName(ns, localName));
+                }
+                else {
+                    this.aggregateRecordQNameList.add(new QName(localName));
+                }
+            }
         }
     }
 
     private void checkParams()
     {
-        constructQName();
+        constructQNames();
 
-        if (!this.hasAggregateRecordQName && !this.hasAggregateDepth) {
+        if (this.aggregateRecordQNameList.size() == 0 && !this.hasAggregateDepth) {
             this.hasAggregateDepth = true;
             this.aggregateDepth = 1;
         }
@@ -145,9 +171,13 @@ public class XMLSplitter
                     continue;
                 }
 
-                if (this.hasAggregateRecordQName &&
-                        !xmlEvent.asStartElement().getName().equals(this.aggregateRecordQName)) {
-                    continue;
+                if (this.aggregateRecordQNameList.size() > 0) {
+                    QName thisName = xmlEvent.asStartElement().getName();
+                    boolean hasMatch = false;
+                    for (QName name : this.aggregateRecordQNameList) {
+                        if (name.equals(thisName)) hasMatch = true;
+                    }
+                    if (!hasMatch) continue;
                 }
             }
             else {
