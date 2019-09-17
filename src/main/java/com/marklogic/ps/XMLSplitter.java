@@ -19,8 +19,8 @@ public class XMLSplitter
         // create the Options
         Options options = new Options();
         options.addOption(new Option("i", "input_file_path", true, "path of file to split"));
-        options.addOption(new Option("e", "aggregate_record_element", true, "name of element to split into document"));
-        options.addOption(new Option("n", "aggregate_record_namespace", true, "namespace of element to split into document"));
+        options.addOption(new Option("e", "aggregate_record_element", true, "name of element to split into documenta"));
+        options.addOption(new Option("n", "aggregate_record_namespace", true, "namespace of element to split into documents"));
         options.addOption(new Option("o", "output_directory_path", true, "target directory for split documents"));
         options.addOption(new Option("d", "aggregate_depth", true, "depth below root to split into documents"));
         options.addOption(new Option("ne", "namespace_element_list", true, "comma-sep namespace element list"));
