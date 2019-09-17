@@ -1,7 +1,7 @@
 # xml-splitter
 A Java StAX-based command line XML splitter.
 
-    usage: xml-splitter  
+    usage: java -jar xml-splitter-<VERSION>-all.jar  
      -d,--aggregate_depth <arg>              depth below root to split into documents  
      -e,--aggregate_record_element <arg>     name of element to split into documents  
      -h,--help                               print help message  
