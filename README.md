@@ -15,3 +15,5 @@ There are two ways to select for elements to split into separate documents. Dept
 You can also select by element QName. A QName is a combination of the namespace and local name of an element. For a single QName you can use the -e and, optionally, the -n argument to specify the local name and namespace. For more then one QName you can use the -ne argument with a comma-separated alternating sequence of namespace and local name, e.g.: http://<i></i>foo.com/ns1,name1,http://<i></i>foo.com/ns2,name2 .
 
 You can combine the depth and QName arguments to select only elements at a particular depth AND matching certain QNames.
+
+Currently the output files are named with a random GUID plus ".xml" and are written into the specified output directory.
