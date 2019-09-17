@@ -12,5 +12,5 @@ A Java StAX-based command line XML splitter.
 
 There are two ways to select for elements to split into separate documents. Depth refers to the depth of the XML element relative to the root. Children of the root are depth 1, children of children of the root are depth 2, and so on.
 
-You can also select by element QName. A QName is a combination of the namespace and local name of an element. For a single QName you can use the -e and, optionally, the -n argument to specify the local name and namespace. For additional QNames you can use the -ne argument, e.g.: http://<i></i>foo.com/ns1,name1,http://<i></i>foo.com/ns2,name2 .
+You can also select by element QName. A QName is a combination of the namespace and local name of an element. For a single QName you can use the -e and, optionally, the -n argument to specify the local name and namespace. For more then one QName you can use the -ne argument with a comma-separated alternating sequence of namespace and local name, e.g.: http://<i></i>foo.com/ns1,name1,http://<i></i>foo.com/ns2,name2 .
 
