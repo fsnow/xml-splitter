@@ -37,7 +37,7 @@ public class XMLSplitter
 
         if (line.hasOption("h")) {
             HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("xml-splitter", options);
+            formatter.printHelp("java -jar xml-splitter-<VERSION>-all.jar", options);
             return;
         }
 
